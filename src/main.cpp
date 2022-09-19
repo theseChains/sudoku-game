@@ -1,5 +1,17 @@
 #include <iostream>
 #include <iomanip>
+#include <random>
+
+namespace rnd
+{
+	std::mt19937 mt{ std::random_device{}() };
+
+	int getNumber(int min = 1, int max = 9)
+	{
+		std::uniform_int_distribution range(min, max);
+		return range(mt);
+	}
+}
 
 std::ostream& boldOn(std::ostream& outputStream)
 {
@@ -16,7 +28,7 @@ std::ostream& boldOff(std::ostream& outputStream)
 	return outputStream;
 }
 
-void createThreeByThreeGrid()
+void createGrid()
 {
 	std::cout << "  ";
 	for (char letterLineIndex{ 'A' }; letterLineIndex < 'J'; ++letterLineIndex)
@@ -39,11 +51,12 @@ void createThreeByThreeGrid()
 		{
 			if (boxColumn == 0 || boxColumn == 3 || boxColumn == 6)
 			{
-				std::cout << boldOn << "|   ";
+				// the numbers are to be inserted here
+				std::cout << boldOn << "| " << boldOff << rnd::getNumber() << ' ';
 			}
 			else
 			{
-				std::cout << boldOff << "|   ";
+				std::cout << boldOff << "| " << rnd::getNumber() << ' ';
 			}
 		}
 		
@@ -72,7 +85,7 @@ void createThreeByThreeGrid()
 
 int main()
 {	
-	createThreeByThreeGrid();
+	createGrid();
 
 	return 0;
 }
