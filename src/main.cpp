@@ -108,6 +108,7 @@ void printNumberRows(int currentRow, const grid_type& numbers)
 
 void printGrid(const grid_type& numbers)
 {
+	// todo: make a GridPrinter class for some of these functions
 	printLettersAtTheTop();
 	printTopLine();
 
@@ -121,7 +122,7 @@ void printGrid(const grid_type& numbers)
 void generateNumbers(grid_type& numbers)
 {
 	// nightmare mode
-	int numberOfClues{ 26 };
+	int numberOfClues{ 17 };
 	std::cout << "number of clues generated: " << numberOfClues << '\n';
 	// now we need to generate the positions randomly
 	for (int cluePosition{ 0 }; cluePosition < numberOfClues; ++cluePosition)
@@ -134,7 +135,7 @@ void generateNumbers(grid_type& numbers)
 			position = std::make_pair(rnd::getNumber(0, 8), rnd::getNumber(0, 8));
 		}
 
-		// assign a random number once the position was found
+		// create a random number
 		int numberToInsert{ rnd::getNumber() };
 
 		// search for that number in the current row, column and 3x3 box
@@ -162,7 +163,22 @@ void generateNumbers(grid_type& numbers)
 				}
 			}
 
-			// todo: check if the current 3x3 box already has this number
+			// check if the current 3x3 box already has this number
+			// if we divide the indices by 3 we can get the box index for that value
+			// we could create a 2d array of 3x3 boxes
+			int boxRowIndex{ position.first / 3 };
+			int boxColumnIndex{ position.second / 3 };
+			for (int row{ boxRowIndex * 3 }; row < boxRowIndex * 3 + 3; ++row)
+			{
+				for (int column{ boxColumnIndex * 3 }; column < boxColumnIndex * 3 + 3; ++column)
+				{
+					if (numbers[row][column] == numberToInsert)
+					{
+						changeTheNumber = true;
+						break;
+					}
+				}
+			}
 
 			if (changeTheNumber)
 			{
@@ -177,12 +193,16 @@ void generateNumbers(grid_type& numbers)
 	}
 }
 
-// i think i'm just going to use a 2d vector to put and manipulate numbers on the grid
 // easy mode: 30 - 36 clues
 // medium mode: 26 - 29 clues
 // hard mode: 22 - 25 clues
 // expert mode: 18 - 21 clues
 // nightmare mode: 17 clues
+//
+// a better idea would be to fill the board entirely and then remove one number and run a 
+// sudoku solver on that board. if more than one solution exists, try removing another number
+// do this until you have reached the appropritate number of clues. we also want to remove 
+// the numbers randmoly across the board to make it look nicer.
 
 int main()
 {	
