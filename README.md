@@ -3,4 +3,4 @@ my attempt at creating a sudoku game in C++
 
 current progress
 
-![image](https://user-images.githubusercontent.com/104849057/191009551-998d5308-d6c8-4ef5-90f2-49b8b3df4f4e.png)
+![image](https://user-images.githubusercontent.com/104849057/191025804-bd620c9f-8ce2-4f34-a97e-002ebfd05eb7.png)
