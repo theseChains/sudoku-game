@@ -122,7 +122,7 @@ void printGrid(const grid_type& numbers)
 void generateNumbers(grid_type& numbers)
 {
 	// nightmare mode
-	int numberOfClues{ 17 };
+	int numberOfClues{ 27 };
 	std::cout << "number of clues generated: " << numberOfClues << '\n';
 	// now we need to generate the positions randomly
 	for (int cluePosition{ 0 }; cluePosition < numberOfClues; ++cluePosition)
