@@ -1,6 +1,10 @@
 #include <iostream>
 #include <iomanip>
 #include <random>
+#include <array>
+#include <tuple>
+
+using grid_type = std::array<std::array<int, 9>, 9>;
 
 namespace rnd
 {
@@ -69,39 +73,78 @@ void printNonNumberRows(int currentRow)
 	std::cout << boldOn << "+\n" << boldOff;
 }
 
-void printNumberRows(int currentRow)
+void printNumberRows(int currentRow, const grid_type& numbers)
 {
 	std::cout << currentRow + 1 << ' ';
 	for (int boxColumn{ 0 }; boxColumn < 9; ++boxColumn)
 	{
+		bool empty{ numbers[currentRow][boxColumn] == 0 };
 		if (boxColumn == 0 || boxColumn == 3 || boxColumn == 6)
 		{
 			// the numbers are to be inserted here
-			std::cout << boldOn << "| " << boldOff << rnd::getNumber() << ' ';
+			if (empty)
+			{
+				std::cout << boldOn << "|   ";
+			}
+			else
+			{
+				std::cout << boldOn << "| " << boldOff << numbers[currentRow][boxColumn] << ' ';
+			}
 		}
 		else
 		{
-			std::cout << boldOff << "| " << rnd::getNumber() << ' ';
+			if (empty)
+			{
+				std::cout << boldOff << "|   ";	
+			}
+			else
+			{
+				std::cout << boldOff << "| " << numbers[currentRow][boxColumn] << ' ';
+			}
 		}
 	}
 	std::cout << boldOn << "|\n";
 }
 
-void printGrid()
+void printGrid(const grid_type& numbers)
 {
 	printLettersAtTheTop();
 	printTopLine();
 
 	for (int row{ 0 }; row < 9; ++row)
 	{
-		printNumberRows(row);	
+		printNumberRows(row, numbers);	
 		printNonNumberRows(row);
 	}
 }
 
+void generateNumbers(grid_type& numbers)
+{
+	// easy mode
+	int numberOfClues{ rnd::getNumber(27, 32) };
+	std::cout << "number of clues generated: " << numberOfClues << '\n';
+	// now we need to generate the positions randomly
+	for (int cluePosition{ 0 }; cluePosition < numberOfClues; ++cluePosition)
+	{
+		auto position{ std::make_pair(rnd::getNumber(0, 8), rnd::getNumber(0, 8)) };
+		// if the position already has a number, create a new position
+		while (numbers[position.first][position.second])
+		{
+			position = std::make_pair(rnd::getNumber(0, 8), rnd::getNumber(0, 8));
+		}
+		// assign a random number once the position was found
+		numbers[position.first][position.second] = rnd::getNumber();
+	}
+}
+
+// i think i'm just going to use a 2d vector to put and manipulate numbers on the grid
+//
+
 int main()
 {	
-	printGrid();
+	grid_type numbers{};
+	generateNumbers(numbers);
+	printGrid(numbers);
 
 	return 0;
 }
