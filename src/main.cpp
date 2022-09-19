@@ -120,25 +120,69 @@ void printGrid(const grid_type& numbers)
 
 void generateNumbers(grid_type& numbers)
 {
-	// easy mode
-	int numberOfClues{ rnd::getNumber(27, 32) };
+	// nightmare mode
+	int numberOfClues{ 26 };
 	std::cout << "number of clues generated: " << numberOfClues << '\n';
 	// now we need to generate the positions randomly
 	for (int cluePosition{ 0 }; cluePosition < numberOfClues; ++cluePosition)
 	{
 		auto position{ std::make_pair(rnd::getNumber(0, 8), rnd::getNumber(0, 8)) };
+
 		// if the position already has a number, create a new position
 		while (numbers[position.first][position.second])
 		{
 			position = std::make_pair(rnd::getNumber(0, 8), rnd::getNumber(0, 8));
 		}
+
 		// assign a random number once the position was found
-		numbers[position.first][position.second] = rnd::getNumber();
+		int numberToInsert{ rnd::getNumber() };
+
+		// search for that number in the current row, column and 3x3 box
+		while (true)
+		{
+			bool changeTheNumber{ false };
+
+			// check if the current row already has this number
+			for (int column{ 0 }; column < 9; ++column)
+			{
+				if (numbers[position.first][column] == numberToInsert)
+				{
+					changeTheNumber = true;
+					break;
+				}
+			}
+			
+			// check if the current column already has this number
+			for (int row{ 0 }; row < 9; ++row)
+			{
+				if (numbers[row][position.second] == numberToInsert)
+				{
+					changeTheNumber = true;
+					break;
+				}
+			}
+
+			// todo: check if the current 3x3 box already has this number
+
+			if (changeTheNumber)
+			{
+				numberToInsert = rnd::getNumber();
+			}
+			else
+			{
+				break;
+			}
+		}
+		numbers[position.first][position.second] = numberToInsert;
 	}
 }
 
 // i think i'm just going to use a 2d vector to put and manipulate numbers on the grid
-//
+// easy mode: 30 - 36 clues
+// medium mode: 26 - 29 clues
+// hard mode: 22 - 25 clues
+// expert mode: 18 - 21 clues
+// nightmare mode: 17 clues
 
 int main()
 {	
