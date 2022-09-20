@@ -1,6 +1,7 @@
 #ifndef GRID_PRINTER_CLASS_H
 #define GRID_PRINTER_CLASS_H
 
+#include <array>
 #include <iomanip>
 #include <iostream>
 

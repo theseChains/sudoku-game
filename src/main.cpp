@@ -4,7 +4,8 @@
 #include <array>
 #include <tuple>
 
-#include "GridPrinter.h"
+#include "grid/GridNumberGenerator.h"
+#include "grid/GridPrinter.h"
 
 using grid_type = std::array<std::array<int, 9>, 9>;
 
@@ -65,7 +66,7 @@ void checkIf3x3BoxHasNumber(const grid_type& numbers, int currentRow, int curren
 
 void generateNumbers(grid_type& numbers)
 {
-	// nightmare mode
+	// mode
 	int numberOfClues{ 27 };
 	std::cout << "number of clues generated: " << numberOfClues << '\n';
 	// now we need to generate the positions randomly
