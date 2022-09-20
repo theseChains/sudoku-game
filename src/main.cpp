@@ -4,6 +4,8 @@
 #include <array>
 #include <tuple>
 
+#include "GridPrinter.h"
+
 using grid_type = std::array<std::array<int, 9>, 9>;
 
 namespace rnd
@@ -14,108 +16,6 @@ namespace rnd
 	{
 		std::uniform_int_distribution range(min, max);
 		return range(mt);
-	}
-}
-
-std::ostream& boldOn(std::ostream& outputStream)
-{
-	outputStream << "\e[36;1m";
-
-	return outputStream;
-}
-
-
-std::ostream& boldOff(std::ostream& outputStream)
-{
-	outputStream << "\e[0m";
-
-	return outputStream;
-}
-
-void printLettersAtTheTop()
-{
-	std::cout << "  ";
-	for (char letterLineIndex{ 'A' }; letterLineIndex < 'J'; ++letterLineIndex)
-	{
-		std::cout << std::setw(3) << letterLineIndex << ' ';
-	}
-	std::cout << '\n';
-}
-
-void printTopLine()
-{
-	std::cout << "  ";
-	for (int topLineIndex{ 0 }; topLineIndex < 9; ++topLineIndex)
-	{
-		std::cout << boldOn << "+---";
-	}
-	std::cout << "+\n" << boldOff;
-}
-
-void printNonNumberRows(int currentRow)
-{
-	std::cout << "  ";
-	for (int lineColumn{ 0 }; lineColumn < 9; ++lineColumn)
-	{
-		if (currentRow == 2 || currentRow == 5 || currentRow == 8)
-		{
-			std::cout << boldOn << "+---";
-		}
-		else if (lineColumn == 0 || lineColumn == 3 || lineColumn == 6)
-		{
-			std::cout << boldOn << '+' << boldOff << "---"; 
-		}
-		else
-		{
-			std::cout << boldOff << "+---";
-		}
-	}
-	std::cout << boldOn << "+\n" << boldOff;
-}
-
-void printNumberRows(int currentRow, const grid_type& numbers)
-{
-	std::cout << currentRow + 1 << ' ';
-	for (int boxColumn{ 0 }; boxColumn < 9; ++boxColumn)
-	{
-		bool empty{ numbers[currentRow][boxColumn] == 0 };
-		if (boxColumn == 0 || boxColumn == 3 || boxColumn == 6)
-		{
-			// the numbers are to be inserted here
-			if (empty)
-			{
-				std::cout << boldOn << "|   ";
-			}
-			else
-			{
-				std::cout << boldOn << "| " << boldOff << numbers[currentRow][boxColumn] << ' ';
-			}
-		}
-		else
-		{
-			if (empty)
-			{
-				std::cout << boldOff << "|   ";	
-			}
-			else
-			{
-				std::cout << boldOff << "| " << numbers[currentRow][boxColumn] << ' ';
-			}
-		}
-	}
-	std::cout << boldOn << "|\n";
-}
-
-void printGrid(const grid_type& numbers)
-{
-	// todo: make a GridPrinter class for some of these functions
-	printLettersAtTheTop();
-	printTopLine();
-
-	for (int row{ 0 }; row < 9; ++row)
-	{
-		printNumberRows(row, numbers);	
-		printNonNumberRows(row);
 	}
 }
 
@@ -208,7 +108,8 @@ int main()
 {	
 	grid_type numbers{};
 	generateNumbers(numbers);
-	printGrid(numbers);
+	GridPrinter gridPrinter{ numbers };
+	gridPrinter.printGrid();
 
 	return 0;
 }

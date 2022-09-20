@@ -22,9 +22,6 @@ private:
 
 	void printNonNumberRows(int currentRow);
 	void printNumberRows(int currentRow);
-
-	std::ostream& boldOn(std::ostream& out);
-	std::ostream& boldOff(std::ostream& out);
 };
 
 #endif
