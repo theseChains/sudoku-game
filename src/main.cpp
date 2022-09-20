@@ -19,6 +19,50 @@ namespace rnd
 	}
 }
 
+void checkIfRowHasNumber(const grid_type& numbers, int currentRow, int numberToInsert,
+		bool& changeTheNumber)
+{
+	for (int rowColumn{ 0 }; rowColumn < 9; ++rowColumn)
+	{
+		if (numbers[currentRow][rowColumn] == numberToInsert)
+		{
+			changeTheNumber = true;
+			break;
+		}
+	}
+}
+
+void checkIfColumnHasNumber(const grid_type& numbers, int currentColumn, int numberToInsert,
+		bool& changeTheNumber)
+{
+	for (int columnRow{ 0 }; columnRow < 9; ++columnRow)
+	{
+		if (numbers[columnRow][currentColumn] == numberToInsert)
+		{
+			changeTheNumber = true;
+			break;
+		}
+	}
+}
+
+void checkIf3x3BoxHasNumber(const grid_type& numbers, int currentRow, int currentColumn,
+		int numberToInsert, bool& changeTheNumber)
+{
+	int boxRowIndex{ currentRow / 3 };
+	int boxColumnIndex{ currentColumn / 3 };
+	for (int row{ boxRowIndex * 3 }; row < boxRowIndex * 3 + 3; ++row)
+		{
+		for (int column{ boxColumnIndex * 3 }; column < boxColumnIndex * 3 + 3; ++column)
+		{
+			if (numbers[row][column] == numberToInsert)
+			{
+				changeTheNumber = true;
+				break;
+			}
+		}
+	}
+}
+
 void generateNumbers(grid_type& numbers)
 {
 	// nightmare mode
@@ -43,42 +87,11 @@ void generateNumbers(grid_type& numbers)
 		{
 			bool changeTheNumber{ false };
 
-			// check if the current row already has this number
-			for (int column{ 0 }; column < 9; ++column)
-			{
-				if (numbers[position.first][column] == numberToInsert)
-				{
-					changeTheNumber = true;
-					break;
-				}
-			}
+			checkIfRowHasNumber(numbers, position.first, numberToInsert, changeTheNumber);
 			
-			// check if the current column already has this number
-			for (int row{ 0 }; row < 9; ++row)
-			{
-				if (numbers[row][position.second] == numberToInsert)
-				{
-					changeTheNumber = true;
-					break;
-				}
-			}
+			checkIfColumnHasNumber(numbers, position.second, numberToInsert, changeTheNumber);
 
-			// check if the current 3x3 box already has this number
-			// if we divide the indices by 3 we can get the box index for that value
-			// we could create a 2d array of 3x3 boxes
-			int boxRowIndex{ position.first / 3 };
-			int boxColumnIndex{ position.second / 3 };
-			for (int row{ boxRowIndex * 3 }; row < boxRowIndex * 3 + 3; ++row)
-			{
-				for (int column{ boxColumnIndex * 3 }; column < boxColumnIndex * 3 + 3; ++column)
-				{
-					if (numbers[row][column] == numberToInsert)
-					{
-						changeTheNumber = true;
-						break;
-					}
-				}
-			}
+			checkIf3x3BoxHasNumber(numbers,position.first, position.second, numberToInsert, changeTheNumber);
 
 			if (changeTheNumber)
 			{
