@@ -2,29 +2,28 @@
 #define	GRID_NUMBER_GENERATOR_CLASS
 
 #include <array>
-#include <functional>
-#include <optional>
 #include <tuple> 
 
-#include "Grid.h"
+#include "../util.h"
 
 class GridNumberGenerator
 {
 private:
-	std::optional<std::reference_wrapper<Grid>> m_numbers;
-
+	grid_type m_numbers{};
+	
 	bool m_changeTheNumber{};
 	int m_numberToInsert{};
 	
-	int row{};
-	int column{};
+	int m_row{};
+	int m_column{};
 
 public:
 	GridNumberGenerator() = default;
 
-	void generateNumbers();
+	grid_type generateNumbers();
 
 private:
+	void checkForNumberChange();
 	void checkIfRowHasNumber();
 	void checkIfColumnHasNumber();
 	void checkIf3x3BoxHasNumber();
