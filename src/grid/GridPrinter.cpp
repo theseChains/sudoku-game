@@ -1,6 +1,6 @@
 #include "GridPrinter.h"
 
-GridPrinter::GridPrinter(const grid_type& numbers) : m_numbers{ numbers }
+GridPrinter::GridPrinter(const GridType& numbers) : m_numbers{ numbers }
 {}
 
 void GridPrinter::printGrid()

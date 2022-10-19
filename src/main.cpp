@@ -15,7 +15,7 @@
 int main()
 {	
 	GridNumberGenerator gridNumberGenerator{};
-	grid_type numbers{ gridNumberGenerator.generateNumbers() };
+	GridType numbers{ gridNumberGenerator.generateNumbers() };
 	
 	GridPrinter gridPrinter{ numbers };
 	gridPrinter.printGrid();

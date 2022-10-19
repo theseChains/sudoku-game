@@ -5,15 +5,15 @@
 #include <iomanip>
 #include <iostream>
 
-using grid_type = std::array<std::array<int, 9>, 9>;
+using GridType = std::array<std::array<int, 9>, 9>;
 
 class GridPrinter
 {
 private:
-	grid_type m_numbers{};	
+	GridType m_numbers{};	
 
 public:
-	GridPrinter(const grid_type& numbers);
+	GridPrinter(const GridType& numbers);
 
 	void printGrid();
 
