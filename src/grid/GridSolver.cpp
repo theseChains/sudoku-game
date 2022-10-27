@@ -1,8 +1,8 @@
 #include "GridSolver.h"
-#include <iostream>
+
 // i want to create a copy of the grid here since i only want to get the number of solutions
 // not solve the grid itself, having a copy prevents modification of the original grid.
-// the modification of the grid happens in the grid generator class
+// the modification of the actual grid happens in the grid generator class
 bool GridSolver::solveGrid(GridType grid)
 {
 	// keep track of what numbers are already used for each row, column and 3x3 box:
@@ -18,7 +18,6 @@ bool GridSolver::solveGrid(GridType grid)
 			int digit{ grid[row][column] };
 			if (digit != 0)
 			{
-				std::cout << "digit " << digit << " is at row " << row << " column " << column << '\n';
 				int digitIndex{ digit - 1 };
 				rowContains[row].set(digitIndex);
 				columnContains[column].set(digitIndex);
