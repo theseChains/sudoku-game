@@ -15,5 +15,5 @@ foreach (_headerFile ${sudoku_HEADERS})
 endforeach()
 list (REMOVE_DUPLICATES sudoku_INCLUDE_DIRS)
 
-add_executable(sudoku.exe ${sudoku_SOURCES})
-target_include_directories(sudoku.exe PRIVATE ${sudoku_INCLUDE_DIRS})
+add_executable(sudoku ${sudoku_SOURCES})
+target_include_directories(sudoku PRIVATE ${sudoku_INCLUDE_DIRS})
