@@ -9,7 +9,7 @@
 class GridSolver
 {
 public:
-	int solveGrid(GridType grid);
+	bool solveGrid(GridType grid);
 	bool solve(GridType& grid, const int rowStart, const int columnStart,
 			std::array<std::bitset<9>, 9>& rowContains,
 			std::array<std::bitset<9>, 9>& columnContains,
