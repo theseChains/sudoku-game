@@ -4,7 +4,7 @@
 #include <array>
 #include <random>
 
-using grid_type = std::array<std::array<int, 9>, 9>;
+using GridType = std::array<std::array<int, 9>, 9>;
 
 namespace rnd
 {
