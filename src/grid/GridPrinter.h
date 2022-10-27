@@ -1,16 +1,15 @@
 #ifndef GRID_PRINTER_CLASS_H
 #define GRID_PRINTER_CLASS_H
 
-#include <array>
 #include <iomanip>
 #include <iostream>
 
-using GridType = std::array<std::array<int, 9>, 9>;
+#include "../util.h"
 
 class GridPrinter
 {
 private:
-	GridType m_numbers{};	
+	GridType m_numbers{};
 
 public:
 	GridPrinter(const GridType& numbers);
