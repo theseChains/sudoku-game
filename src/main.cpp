@@ -6,17 +6,12 @@
 // hard mode: 22 - 25 clues
 // expert mode: 18 - 21 clues
 // nightmare mode: 17 clues
-//
-// a better idea would be to fill the board entirely and then remove one number and run a 
-// sudoku solver on that board. if more than one solution exists, try removing another number
-// do this until you have reached the appropritate number of clues. we also want to remove 
-// the numbers randmoly across the board to make it look nicer.
 
 int main()
-{	
+{
 	GridNumberGenerator gridNumberGenerator{};
-	GridType numbers{ gridNumberGenerator.generateNumbers() };
-	
+	GridType numbers{ gridNumberGenerator.generateNumbers(17) };
+
 	GridPrinter gridPrinter{ numbers };
 	gridPrinter.printGrid();
 

@@ -23,7 +23,7 @@ private:
 public:
 	GridNumberGenerator() = default;
 
-	GridType generateNumbers();
+	GridType generateNumbers(int numberOfClues);
 
 private:
 	void checkForNumberChange();
