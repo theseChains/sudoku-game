@@ -1,112 +1,108 @@
 #include "GridSolver.h"
 
-// i want to create a copy of the grid here since i only want to get the number of solutions
-// not solve the grid itself, having a copy prevents modification of the original grid.
-// the modification of the actual grid happens in the grid generator class
-bool GridSolver::solveGrid(GridType grid)
+#include <algorithm>
+#include <iostream>
+#include <random>
+#include <ranges>
+
+GridSolver::GridSolver(const GridType& board)
 {
-	// keep track of what numbers are already used for each row, column and 3x3 box:
-	std::array<std::bitset<9>, 9> rowContains{ 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	std::array<std::bitset<9>, 9> columnContains{ 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	std::array<std::bitset<9>, 9> boxContains{ 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
-	// loop over the board to mark up all of the integers that were already given to us
-	for (int row{ 0 }; row < 9; ++row)
-	{
-		for (int column{ 0 }; column < 9; ++column)
-		{
-			int digit{ grid[row][column] };
-			if (digit != 0)
-			{
-				int digitIndex{ digit - 1 };
-				rowContains[row].set(digitIndex);
-				columnContains[column].set(digitIndex);
-				// compute which box we are in right now
-				int box{ getBox(row, column) };
-				boxContains[box].set(digitIndex);
-			}
-		}
-	}
-
-	return solve(grid, 0, 0, rowContains, columnContains, boxContains);
+	m_numberOfSolutions = 0;
+	m_grid = board;
 }
 
-bool GridSolver::solve(GridType& grid, const int rowStart, const int columnStart,
-		std::array<std::bitset<9>, 9>& rowContains,
-		std::array<std::bitset<9>, 9>& columnContains,
-		std::array<std::bitset<9>, 9>& boxContains)
+void GridSolver::solve()
 {
-	// find a position that we can fill in:
-	auto [row, column]{ nextEmptyPosition(grid, rowStart, columnStart) };
+	backtrack(0, 0);
+}
 
-	// end of board
-	if (row == 9)
+bool GridSolver::backtrack(int row, int column)
+{
+	// end of board, return true
+	if (row == 8 && column == 9)
 	{
+		++m_numberOfSolutions;
+		m_solution = m_grid;
 		return true;
 	}
 
-	// compute which numbers have already been used in the current row, column or box
-	const int box{ getBox(row, column) };
-	const std::bitset<9> contains{ rowContains[row] | columnContains[column] | boxContains[box] };
-
-	if (contains.all())
+	// reached end of row, go to next
+	if (column == 9)
 	{
-		return false;
+		column = 0;
+		++row;
 	}
 
-	// loop over all digits
-	for (int digitIndex{ 0 }; digitIndex < 9; ++digitIndex)
+	// position already has value, go to next
+	if (m_grid[row][column] > 0)
 	{
-		if (!contains[digitIndex])
-		{
-			grid[row][column] = digitIndex + 1;
-			rowContains[row].set(digitIndex);
-			columnContains[column].set(digitIndex);
-			boxContains[box].set(digitIndex);
+		return backtrack(row, column + 1);
+	}
 
-			if (solve(grid, row, column, rowContains, columnContains, boxContains))
+	// create array with random numbers instead of normal loop
+	// used for generating unique puzzles
+	std::array<int, 9> numbers{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	std::mt19937 mt{ std::random_device{}() };
+	std::ranges::shuffle(numbers, mt);
+
+	int index{ 0 };
+	for (auto number : numbers)
+	{
+		// check if its safe to place number
+		if (isSafe(row, column, number))
+		{
+			m_grid[row][column] = number;
+
+			// this doesn't work
+			if (backtrack(row, column + 1) && m_numberOfSolutions > 1)
 			{
 				return true;
 			}
-
-			rowContains[row].reset(digitIndex);
-			columnContains[column].reset(digitIndex);
-			boxContains[box].reset(digitIndex);
 		}
 	}
 
-	grid[row][column] = 0;
+	// number was wrong, reset
+	m_grid[row][column] = 0;
 	return false;
 }
 
-int GridSolver::getBox(int row, int column)
+bool GridSolver::isSafe(int row, int column, int number)
 {
-	return (row / 3) * 3 + column / 3;
-}
-
-int GridSolver::getNextRow(int row, int column)
-{
-	return row + (column + 1) / 9;
-}
-
-int GridSolver::getNextColumn(int column)
-{
-	return (column + 1) % 9;
-}
-
-std::pair<int, int> GridSolver::nextEmptyPosition(GridType& grid, int row, int column)
-{
-	while (row != 9)
+	// check in the same row
+	for (int i{ 0 }; i < 9; ++i)
 	{
-		if (grid[row][column] == 0)
-		{
-			return { row, column };
-		}
-
-		row = getNextRow(row, column);
-		column = getNextColumn(column);
+		if (m_grid[row][i] == number)
+			return false;
 	}
 
-	// off the board
-	return { 9, 0 };
+	// check in the same column
+	for (int i{ 0 }; i < 9; ++i)
+	{
+		if (m_grid[i][column] == number)
+			return false;
+	}
+
+	// check in the same box
+	int boxRow{ row / 3 * 3 };
+	int boxColumn{ column / 3 * 3 };
+	for (int i{ boxRow }; i < boxRow + 3; ++i)
+	{
+		for (int j{ boxColumn }; j < boxColumn + 3; ++j)
+		{
+			if (m_grid[i][j] == number)
+				return false;
+		}
+	}
+
+	return true;
+}
+
+bool GridSolver::isUnique()
+{
+	return m_numberOfSolutions == 1;
+}
+
+GridType GridSolver::getSolution() const
+{
+	return m_solution;
 }

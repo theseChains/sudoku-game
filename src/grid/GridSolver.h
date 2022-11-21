@@ -1,25 +1,27 @@
 #ifndef SUDOKU_GRID_SOLVER_H
 #define SUDOKU_GRID_SOLVER_H
 
-#include "../util.h"
-
-#include <bitset>
 #include <tuple>
+
+#include "../util.h"
 
 class GridSolver
 {
 public:
-	bool solveGrid(GridType grid);
-	bool solve(GridType& grid, const int rowStart, const int columnStart,
-			std::array<std::bitset<9>, 9>& rowContains,
-			std::array<std::bitset<9>, 9>& columnContains,
-			std::array<std::bitset<9>, 9>& boxContains);
+	GridSolver() = default;
+	GridSolver(const GridType& board);
+
+	void solve();
+	bool isUnique();
+
+	GridType getSolution() const;
 
 private:
-	int getBox(int row, int column);
-	int getNextRow(int row, int column);
-	int getNextColumn(int column);
-	std::pair<int, int> nextEmptyPosition(GridType& grid, int row, int column);
+	GridType m_grid{};
+	GridType m_solution{};
+	int m_numberOfSolutions{};
+	bool isSafe(int row, int column, int num);
+	bool backtrack(int row, int column);
 };
 
 #endif

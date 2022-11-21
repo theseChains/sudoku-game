@@ -1,113 +1,68 @@
 #include "GridNumberGenerator.h"
+
+#include <algorithm>
 #include <iostream>
+#include <random>
+#include <ranges>
 
-GridType GridNumberGenerator::generateNumbers(int numberOfClues)
+void GridNumberGenerator::generateNumbers(int numberOfClues)
 {
-	// generate a full valid board
-	for (int gridIndex{ 0 }; gridIndex < 81; ++gridIndex)
+	struct Cell
 	{
-		m_row = gridIndex / 9;
-		m_column = gridIndex % 9;
+		int row{};
+		int column{};
+		int value{};
+	};
 
-		m_numberToInsert = rnd::getNumber();
-		checkForNumberChange();
 
-		m_grid[m_row][m_column] = m_numberToInsert;
+	std::cout << "solving\n";
+	m_solver.solve();
+	m_grid = m_solver.getSolution();
+	std::cout << "solved\n";
 
-		while (!m_solver.solveGrid(m_grid))
+	std::array<Cell, 81> cells{};
+	int count{ 0 };
+	for (int i{ 0 }; i < 9; ++i)
+	{
+		for (int j{ 0 }; j < 9; ++j)
 		{
-			m_numberToInsert = rnd::getNumber();
-			checkForNumberChange();
-
-			m_grid[m_row][m_column] = m_numberToInsert;
+			cells[count].row = i;
+			cells[count].column = j;
+			cells[count].value = m_grid[i][j];
+			++count;
 		}
 	}
 
-	// remove numbers at random positions until the proper amount of clues is reached
-	int amountOfNumbersToRemove{ 81 - numberOfClues };
-	for (int index{ 0 }; index < amountOfNumbersToRemove; ++index)
+	// shuffle array randomly to remove positions:
+	std::mt19937 mt{ std::random_device{}() };
+	std::ranges::shuffle(cells, mt);
+
+	int numberOfUnknowns{ 81 - numberOfClues };
+	std::cout << "generating\n";
+	for (int index{ 0 }; const auto& cell : cells)
 	{
-		auto [row, column]{ std::make_pair(index / 9, index % 9) };
-
-		int previousValue{ m_grid[row][column] };
-		m_grid[row][column] = 0;
-
-		// check if the grid still has a solution
-		while (!m_solver.solveGrid(m_grid))
+		m_grid[cell.row][cell.column] = 0;
+		m_solver = GridSolver{ m_grid };
+		m_solver.solve();
+		if (!m_solver.isUnique())
 		{
-			m_grid[row][column] = previousValue;
-			std::tie(row, column) = std::make_pair(rnd::getNumber(0, 8), rnd::getNumber(0, 8));
-
-			previousValue = m_grid[row][column];
-			m_grid[row][column] = 0;
-		}
-	}
-
-	return m_grid;
-}
-
-void GridNumberGenerator::checkForNumberChange()
-{
-	while (true)
-	{
-		m_changeTheNumber = false;
-
-		checkIfRowHasNumber();
-		checkIfColumnHasNumber();
-		checkIf3x3BoxHasNumber();
-
-		if (m_changeTheNumber)
-		{
-			m_numberToInsert = rnd::getNumber();
+			// removal of value does not produce unique solution, put the value back
+			m_grid[cell.row][cell.column] = cell.value;
 		}
 		else
 		{
+			--numberOfUnknowns;
+		}
+		std::cout << "numberOfUnknowns: " << numberOfUnknowns << '\n';
+		std::cout << "index: " << index << '\n';
+		if (index == numberOfUnknowns)
+		{
 			break;
 		}
 	}
 }
 
-void GridNumberGenerator::checkIfRowHasNumber()
+GridType GridNumberGenerator::getGrid() const
 {
-	for (int currentColumn{ 0 }; currentColumn < 9; ++currentColumn)
-	{
-		if (m_grid[m_row][currentColumn] == m_numberToInsert)
-		{
-			m_changeTheNumber = true;
-			break;
-		}
-	}
-}
-
-void GridNumberGenerator::checkIfColumnHasNumber()
-{
-	for (int currentRow{ 0 }; currentRow < 9; ++currentRow)
-	{
-		if (m_grid[currentRow][m_column] == m_numberToInsert)
-		{
-			m_changeTheNumber = true;
-			break;
-		}
-	}
-}
-
-void GridNumberGenerator::checkIf3x3BoxHasNumber()
-{
-	int boxRowIndex{ m_row / 3 };
-	int boxColumnIndex{ m_column / 3 };
-
-	int currentGridRow{ boxRowIndex * 3 };
-	int currentGridColumn{ boxColumnIndex * 3 };
-
-	for (int row{ currentGridRow }; row < currentGridRow + 3; ++row)
-	{
-		for (int column{ currentGridColumn }; column < currentGridColumn + 3; ++column)
-		{
-			if (m_grid[row][column] == m_numberToInsert)
-			{
-				m_changeTheNumber = true;
-				break;
-			}
-		}
-	}
+	return m_grid;
 }
