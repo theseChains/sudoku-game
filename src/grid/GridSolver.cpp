@@ -53,7 +53,6 @@ bool GridSolver::backtrack(int row, int column)
 		{
 			m_grid[row][column] = number;
 
-			// this doesn't work
 			if (backtrack(row, column + 1) && m_numberOfSolutions > 1)
 			{
 				return true;
